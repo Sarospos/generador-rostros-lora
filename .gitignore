@@ -1,0 +1,19 @@
+# Entorno virtual
+venv/
+.env
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+
+# Archivos de VSCode
+.vscode/
+
+# Archivos temporales
+*.log
+*.sqlite3
+
+# Archivos generados por la app
+media/
+output_model_lora/
+__pycache__/

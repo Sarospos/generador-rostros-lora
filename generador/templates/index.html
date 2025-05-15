@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Rostros</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8">
+  <div class="max-w-xl mx-auto bg-white rounded-xl shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-4">🧠 Generador de Rostros AI</h1>
+    <form method="post">
+      {% csrf_token %}
+      <label class="block mb-2"><input type="checkbox" name="atributos" value="Young"> Joven</label>
+      <label class="block mb-2"><input type="checkbox" name="atributos" value="Smiling"> Sonriente</label>
+      <label class="block mb-2"><input type="checkbox" name="atributos" value="Black_Hair"> Pelo negro</label>
+      <label class="block mb-2"><input type="checkbox" name="atributos" value="Wearing_Lipstick"> Labial</label>
+      <label class="block mb-2"><input type="checkbox" name="atributos" value="Bangs"> Flequillo</label>
+
+      <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        Generar Imagen
+      </button>
+    </form>
+
+    {% if image_url %}
+      <div class="mt-6">
+        <h2 class="text-lg font-semibold">Resultado:</h2>
+        <img src="{{ image_url }}" class="mt-2 rounded shadow">
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
