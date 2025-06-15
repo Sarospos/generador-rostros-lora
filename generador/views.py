@@ -1,11 +1,10 @@
 from django.shortcuts import render
-import torch
-from diffusers import DiffusionPipeline
-from safetensors.torch import load_file
+import requests
+import base64
 import os
 from datetime import datetime
+from django.conf import settings
 
-# === Lista completa de atributos ===
 ATRIBUTOS = sorted([
     "5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eyes", "Bald", "Bangs",
     "Big_Lips", "Big_Nose", "Black_Hair", "Blond_Hair", "Blurry", "Brown_Hair", "Bushy_Eyebrows",
@@ -16,51 +15,41 @@ ATRIBUTOS = sorted([
     "Wearing_Necktie", "Young"
 ])
 
-# === Configuración del modelo ===
-MODEL_DIR = "./output_model_lora"
-BASE_MODEL = "stabilityai/stable-diffusion-2-1"
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-# === Cargar modelo solo una vez ===
-print("🔁 Cargando modelo...")
-pipe = DiffusionPipeline.from_pretrained(
-    BASE_MODEL,
-    torch_dtype=torch.float16 if DEVICE == "cuda" else torch.float32,
-    safety_checker=None,
-    requires_safety_checker=False,
-).to(DEVICE)
-pipe.enable_attention_slicing()
-
-# === Aplicar pesos LoRA ===
-lora_path = os.path.join(MODEL_DIR, "diffusion_pytorch_model.safetensors")
-if os.path.exists(lora_path):
-    lora_weights = load_file(lora_path, device=DEVICE)
-    pipe.unet.load_state_dict(lora_weights, strict=False)
-    print("✅ LoRA aplicado correctamente.")
-else:
-    print("⚠️ No se encontró el archivo de pesos LoRA.")
-
-# === Vista principal ===
 def index(request):
     imagen_generada = None
 
     if request.method == "POST":
         seleccionados = request.POST.getlist("atributos")
         prompt = ", ".join(seleccionados)
-        generator = torch.manual_seed(42)
 
-        # Generar imagen
-        image = pipe(prompt=prompt, num_inference_steps=40, guidance_scale=7.5, generator=generator).images[0]
+        # Enviar al servidor remoto
+        try:
+            response = requests.post(
+                "https://4202-200-9-234-238.ngrok-free.app/generar/",
+                json={"prompt": prompt}
+            )
+            if response.status_code == 200:
+                img_base64 = response.json()["imagen"]
+                # Guardar en media/rostros
+                rostros_dir = os.path.join(settings.MEDIA_ROOT, "rostros")
+                os.makedirs(rostros_dir, exist_ok=True)
+                filename = f"imagen_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+                filepath = os.path.join(rostros_dir, filename)
+                with open(filepath, "wb") as f:
+                    f.write(base64.b64decode(img_base64))
+                imagen_generada = f"rostros/{filename}"
+            else:
+                print("Error en la respuesta del servidor:", response.text)
+        except Exception as e:
+            print("Error de conexión con el servidor:", str(e))
 
-        # Guardar imagen
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        nombre_archivo = f"imagen_{timestamp}.png"
-        ruta_completa = os.path.join("media", nombre_archivo)
-        image.save(ruta_completa)
+    atributos_legibles = [(a, a.replace("_", " ")) for a in ATRIBUTOS]
+    return render(request, "index.html", {"atributos": atributos_legibles, "imagen_generada": imagen_generada})
 
-        imagen_generada = nombre_archivo
-
-    return render(request, "index.html", {
-        "atributos": [(a, a.replace("_", " ")) for a in ATRIBUTOS],
-        "imagen_generada": imagen_generada
-    })
+def galeria(request):
+    rostros_dir = os.path.join(settings.MEDIA_ROOT, "rostros")
+    if not os.path.exists(rostros_dir):
+        images = []
+    else:
+        images = [f"rostros/{img}" for img in os.listdir(rostros_dir) if img.endswith('.png') or img.endswith('.jpg')]
+    return render(request, "galeria.html", {"images": images})

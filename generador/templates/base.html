@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>RostroApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="{% url 'index' %}" class="text-white font-bold text-xl">RostroApp</a>
+        <div>
+          <a href="{% url 'index' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded">Inicio</a>
+          <a href="{% url 'galeria' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded">Galería</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto mt-8">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

@@ -1,45 +1,62 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Generador de Rostros AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-800">
+{% extends 'base.html' %}
 
-  <div class="flex items-center justify-center min-h-screen">
-    <div class="bg-white shadow-xl rounded-xl p-8 max-w-4xl w-full">
-      <h1 class="text-3xl font-bold mb-6 text-center flex items-center justify-center gap-2">
-        🧠 Generador de Rostros AI
-      </h1>
+{% block content %}
+<div class="flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-xl rounded-xl p-8 max-w-4xl w-full">
+    <h1 class="text-3xl font-bold mb-6 text-center flex items-center justify-center gap-2">
+      🧠 Generador de Rostros AI
+    </h1>
 
-      <form method="POST">
-        {% csrf_token %}
+    <form method="POST">
+      {% csrf_token %}
 
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto p-2 border border-gray-200 rounded-md">
-          {% for atributo in atributos %}
-            <label class="inline-flex items-center space-x-2">
-              <input type="checkbox" name="atributos" value="{{ atributo.0 }}">
-              <span class="text-sm">{{ atributo.1 }}</span>
-            </label>
-          {% endfor %}
-        </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto p-2 border border-gray-200 rounded-md">
+        {% for atributo in atributos %}
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="atributos" value="{{ atributo.0 }}">
+            <span class="text-sm">{{ atributo.1 }}</span>
+          </label>
+        {% endfor %}
+      </div>
 
-        <div class="text-center mt-6">
-          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
-            Generar Imagen
-          </button>
-        </div>
-      </form>
+      <div class="text-center mt-6">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
+          Generar Imagen
+        </button>
+      </div>
+    </form>
 
-      {% if imagen_generada %}
-        <div class="mt-10 text-center">
-          <h2 class="text-lg font-semibold mb-2">Resultado:</h2>
-          <img src="/media/{{ imagen_generada }}" alt="Imagen generada" class="mx-auto rounded-lg shadow-md max-w-sm">
-        </div>
-      {% endif %}
-    </div>
+    {% if imagen_generada %}
+      <div class="mt-10 text-center">
+        <h2 class="text-lg font-semibold mb-2">Resultado:</h2>
+        <img src="/media/{{ imagen_generada }}" alt="Imagen generada" class="mx-auto rounded-lg shadow-md max-w-sm">
+      </div>
+    {% endif %}
   </div>
+</div>
 
-</body>
-</html>
+<script>
+  const form = document.querySelector("form");
+  const checkboxes = form.querySelectorAll('input[name="atributos"]');
+
+  form.addEventListener("submit", function () {
+    const prompt = Array.from(checkboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(cb => cb.value)
+      .join(', ');
+
+    localStorage.setItem("ultimo_prompt", prompt);
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const promptGuardado = localStorage.getItem("ultimo_prompt");
+    if (promptGuardado && document.querySelector("img")) {
+      const div = document.createElement("div");
+      div.className = "text-sm text-gray-700 mt-4 text-center font-mono";
+      div.innerHTML = `<strong>Prompt usado:</strong> ${promptGuardado}`;
+      document.querySelector(".text-center.mt-6").insertAdjacentElement("afterend", div);
+      localStorage.removeItem("ultimo_prompt");
+    }
+  });
+</script>
+{% endblock %}
