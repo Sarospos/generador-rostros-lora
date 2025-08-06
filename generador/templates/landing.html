@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[70vh]">
+    <div class="bg-black bg-opacity-60 rounded-xl px-6 py-4 mb-6 w-full max-w-3xl">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-4 text-white drop-shadow-lg">Generador de Rostros AI</h1>
+        <p class="text-lg md:text-xl text-center max-w-2xl mb-4 text-gray-100 drop-shadow">
+            Esta aplicación utiliza inteligencia artificial para crear imágenes de rostros únicos a partir de atributos seleccionados por el usuario. 
+            Puedes experimentar con diferentes combinaciones y ver los resultados en tiempo real.
+        </p>
+        <div class="flex flex-col md:flex-row gap-4 justify-center mb-4">
+            <a href="{% url 'index' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow text-lg transition">Probar Generador</a>
+            <a href="{% url 'galeria' %}" class="bg-gray-200 hover:bg-gray-300 text-blue-800 font-semibold px-8 py-3 rounded-lg shadow text-lg transition">Ver Galería</a>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-lg p-6 max-w-3xl">
+        <h2 class="text-2xl font-bold mb-2 text-blue-700">¿Para qué sirve?</h2>
+        <ul class="list-disc pl-6 text-gray-700 mb-4">
+            <li>Explorar cómo la IA puede generar rostros realistas o creativos.</li>
+            <li>Inspirar proyectos de diseño, arte digital o investigación.</li>
+            <li>Aprender sobre el uso de atributos faciales en modelos generativos.</li>
+        </ul>
+        <h2 class="text-2xl font-bold mb-2 text-blue-700">¿Cómo funciona?</h2>
+        <ul class="list-disc pl-6 text-gray-700">
+            <li>Selecciona los atributos faciales que desees.</li>
+            <li>Haz clic en "Generar Imagen" y la IA creará un rostro basado en tu selección.</li>
+            <li>Guarda y visualiza tus creaciones en la galería.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

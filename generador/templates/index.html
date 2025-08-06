@@ -21,15 +21,21 @@
 
       <div class="text-center mt-6">
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
-          Generar Imagen
+          Generar Imágenes
         </button>
       </div>
     </form>
 
-    {% if imagen_generada %}
+    {% if imagenes_generadas %}
       <div class="mt-10 text-center">
-        <h2 class="text-lg font-semibold mb-2">Resultado:</h2>
-        <img src="/media/{{ imagen_generada }}" alt="Imagen generada" class="mx-auto rounded-lg shadow-md max-w-sm">
+        <h2 class="text-lg font-semibold mb-4">Resultados:</h2>
+        <div class="grid grid-cols-3 gap-4">
+          {% for imagen in imagenes_generadas %}
+            <div>
+              <img src="/media/{{ imagen }}" alt="Imagen generada" class="mx-auto rounded-lg shadow-md max-w-full">
+            </div>
+          {% endfor %}
+        </div>
       </div>
     {% endif %}
   </div>
