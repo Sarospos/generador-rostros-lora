@@ -25,10 +25,10 @@ def index(request):
         rostros_dir = os.path.join(settings.MEDIA_ROOT, "rostros")
         os.makedirs(rostros_dir, exist_ok=True)
 
-        for i in range(9):  # Generar 9 imágenes
+        for i in range(3):  # Generar 9 imágenes
             try:
                 response = requests.post(
-                    "https://b3d5fe3f6690.ngrok-free.app/generar/",
+                    "https://df9387fc9026.ngrok-free.app/generar/",
                     json={"prompt": prompt}
                 )
                 if response.status_code == 200:
